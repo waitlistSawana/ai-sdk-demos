@@ -20,6 +20,26 @@ You can start editing the page by modifying `app/page.tsx`. The page auto-update
 
 This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
 
+## Project Info
+
+Don't update pre-install component librarys. We will update them sometime
+
+- shadcn/ui: src\components\ui
+- ai-elements: 
+
+## Section
+
+### Demos
+
+
+### Clone Chatbot
+
+- T3 Chat
+- 豆包
+- Claude
+
+### Agents
+
 ## Learn More
 
 To learn more about Next.js, take a look at the following resources:
