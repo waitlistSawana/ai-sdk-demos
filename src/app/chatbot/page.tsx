@@ -6,7 +6,8 @@ export default function ChatbotPage() {
       <h1 className="text-2xl">Select Chatbot Demos</h1>
       <nav className="flex gap-3 ">
         <Link href={"/chatbot/default"}>Default</Link>
-        <Link href={"/chatbot/clones"}>Clones</Link>
+        <Link href={"/chatbot/clones"}>Clone Demos</Link>
+        <Link href={"/chatbot/chatgpt"}>Chatgpt</Link>
       </nav>
     </div>
   );
