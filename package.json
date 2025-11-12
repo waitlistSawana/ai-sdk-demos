@@ -7,7 +7,9 @@
     "build": "next build",
     "start": "next start",
     "lint": "biome check",
+    "lint:write": "biome check --write",
     "format": "biome format --write",
+    "format:tailwindcss": "biome lint --write --unsafe --only=useSortedClasses",
     "typecheck": "tsc --noEmit"
   },
   "dependencies": {

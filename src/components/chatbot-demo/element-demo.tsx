@@ -22,7 +22,7 @@ const tabs = [
 ];
 
 export const ElementsDemo = () => (
-  <Tabs defaultValue={tabs[0].name} className="w-full h-screen flex flex-col">
+  <Tabs defaultValue={tabs[0].name} className="flex h-screen w-full flex-col">
     <TabsList>
       {tabs.map((tab) => (
         <TabsTrigger key={tab.name} value={tab.name}>
@@ -34,7 +34,7 @@ export const ElementsDemo = () => (
       // flex-1 with min-h-0 make h restric work
       // reason: flex-1 has { min-height: auto }
       <TabsContent
-        className="flex-1 w-full min-h-0"
+        className="min-h-0 w-full flex-1"
         key={tab.name}
         value={tab.name}
       >

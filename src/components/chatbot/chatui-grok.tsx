@@ -3,17 +3,15 @@
 import type { ChatRequestOptions, ChatStatus, FileUIPart, UIMessage } from "ai";
 import {
   AudioWaveformIcon,
-  BarChartIcon,
-  BoxIcon,
   CameraIcon,
-  CodeSquareIcon,
+  CheckIcon,
+  ChevronDownIcon,
   FileIcon,
-  GlobeIcon,
-  GraduationCapIcon,
   ImageIcon,
-  NotepadTextIcon,
+  LightbulbIcon,
   PaperclipIcon,
   ScreenShareIcon,
+  SearchIcon,
 } from "lucide-react";
 import { type ComponentType, useState } from "react";
 import { toast } from "sonner";
@@ -34,6 +32,19 @@ import {
   MessageResponse,
 } from "@/components/ai-elements/message";
 import {
+  ModelSelector,
+  ModelSelectorContent,
+  ModelSelectorEmpty,
+  ModelSelectorGroup,
+  ModelSelectorInput,
+  ModelSelectorItem,
+  ModelSelectorList,
+  ModelSelectorLogo,
+  ModelSelectorLogoGroup,
+  ModelSelectorName,
+  ModelSelectorTrigger,
+} from "@/components/ai-elements/model-selector";
+import {
   PromptInput,
   PromptInputButton,
   PromptInputFooter,
@@ -52,7 +63,6 @@ import {
   SourcesContent,
   SourcesTrigger,
 } from "@/components/ai-elements/sources";
-import { Suggestion, Suggestions } from "@/components/ai-elements/suggestion";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -65,7 +75,14 @@ import { cn } from "@/lib/utils";
 // Types & Interfaces
 // ============================================================================
 
-export interface ChatUIChatGPTProps {
+export interface ModelConfig {
+  id: string;
+  name: string;
+  chefSlug: string;
+  providers: string[];
+}
+
+export interface ChatUIGrokProps {
   /** Messages from useChat */
   messages: UIMessage[];
   /** Chat status from useChat */
@@ -82,12 +99,10 @@ export interface ChatUIChatGPTProps {
   onRegenerate?: (
     options?: { messageId?: string } & ChatRequestOptions,
   ) => void | Promise<void>;
-  /** Optional suggestions for quick actions */
-  suggestions?: Array<{
-    icon?: ComponentType<{ size?: number; style?: React.CSSProperties }>;
-    text: string;
-    color?: string;
-  }>;
+  /** Model selector configuration */
+  models?: ModelConfig[];
+  selectedModel?: string;
+  onModelChange?: (modelId: string) => void;
   /** Input placeholder text */
   placeholder?: string;
   /** Additional className for root container */
@@ -177,19 +192,24 @@ function isTextComplete(message: UIMessage): boolean {
 // Main Component
 // ============================================================================
 
-export function ChatUIChatGPT({
+export function ChatUIGrok({
   messages,
   status,
   onSendMessage,
   onStop,
   onRegenerate,
-  suggestions = [],
-  placeholder = "Ask anything",
+  models = [],
+  selectedModel,
+  onModelChange,
+  placeholder = "How can Grok help?",
   className,
-}: ChatUIChatGPTProps) {
+}: ChatUIGrokProps) {
   const [text, setText] = useState<string>("");
+  const [modelSelectorOpen, setModelSelectorOpen] = useState(false);
   const [useWebSearch, setUseWebSearch] = useState<boolean>(false);
   const [useMicrophone, setUseMicrophone] = useState<boolean>(false);
+
+  const selectedModelData = models.find((m) => m.id === selectedModel);
 
   const handleSubmit = (message: PromptInputMessage) => {
     const msg = message as { text?: string; files?: any[] };
@@ -215,10 +235,6 @@ export function ChatUIChatGPT({
     });
   };
 
-  const handleSuggestionClick = (suggestion: string) => {
-    onSendMessage({ text: suggestion });
-  };
-
   const handleBranchPrevious = () => {
     console.log("MessageBranch: previous clicked");
   };
@@ -230,7 +246,7 @@ export function ChatUIChatGPT({
   return (
     <div
       className={cn(
-        "relative flex size-full flex-col divide-y overflow-hidden",
+        "relative flex size-full flex-col divide-y overflow-hidden bg-secondary",
         className,
       )}
     >
@@ -273,7 +289,7 @@ export function ChatUIChatGPT({
                         !reasoning) && (
                         <MessageContent
                           className={cn(
-                            "group-[.is-user]:rounded-[24px] group-[.is-user]:bg-secondary group-[.is-user]:text-foreground",
+                            "group-[.is-user]:rounded-[24px] group-[.is-user]:rounded-br-sm group-[.is-user]:border group-[.is-user]:bg-background group-[.is-user]:text-foreground",
                             "group-[.is-assistant]:bg-transparent group-[.is-assistant]:p-0 group-[.is-assistant]:text-foreground",
                           )}
                         >
@@ -283,7 +299,6 @@ export function ChatUIChatGPT({
                     </div>
                   </Message>
                 </MessageBranchContent>
-                {/* MessageBranch UI preserved but not functional */}
                 <MessageBranchSelector className="px-0" from={message.role}>
                   <MessageBranchPrevious onClick={handleBranchPrevious} />
                   <MessageBranchPage />
@@ -350,35 +365,86 @@ export function ChatUIChatGPT({
                 onClick={() => setUseWebSearch(!useWebSearch)}
                 variant="outline"
               >
-                <GlobeIcon size={16} />
+                <SearchIcon size={16} />
                 <span>Search</span>
               </PromptInputButton>
+              <PromptInputButton
+                className="rounded-full border font-medium"
+                onClick={() => setUseMicrophone(!useMicrophone)}
+                variant="outline"
+              >
+                <LightbulbIcon size={16} />
+                <span>Fun mode</span>
+              </PromptInputButton>
             </PromptInputTools>
-            <PromptInputButton
-              className="rounded-full font-medium text-foreground"
-              onClick={() => setUseMicrophone(!useMicrophone)}
-              variant="secondary"
-            >
-              <AudioWaveformIcon size={16} />
-              <span>Voice</span>
-            </PromptInputButton>
+            <div className="flex items-center gap-2">
+              {models.length > 0 && onModelChange && (
+                <ModelSelector
+                  onOpenChange={setModelSelectorOpen}
+                  open={modelSelectorOpen}
+                >
+                  <ModelSelectorTrigger asChild>
+                    <PromptInputButton variant="ghost">
+                      {selectedModelData?.chefSlug && (
+                        <ModelSelectorLogo
+                          provider={selectedModelData.chefSlug}
+                        />
+                      )}
+                      {selectedModelData?.name && (
+                        <ModelSelectorName>
+                          {selectedModelData.name}
+                        </ModelSelectorName>
+                      )}
+                      <ChevronDownIcon size={16} />
+                    </PromptInputButton>
+                  </ModelSelectorTrigger>
+                  <ModelSelectorContent>
+                    <ModelSelectorInput placeholder="Search models..." />
+                    <ModelSelectorList>
+                      <ModelSelectorEmpty>No models found.</ModelSelectorEmpty>
+                      <ModelSelectorGroup heading="xAI">
+                        {models.map((m) => (
+                          <ModelSelectorItem
+                            key={m.id}
+                            onSelect={() => {
+                              onModelChange(m.id);
+                              setModelSelectorOpen(false);
+                            }}
+                            value={m.id}
+                          >
+                            <ModelSelectorLogo provider={m.chefSlug} />
+                            <ModelSelectorName>{m.name}</ModelSelectorName>
+                            <ModelSelectorLogoGroup>
+                              {m.providers.map((provider) => (
+                                <ModelSelectorLogo
+                                  key={provider}
+                                  provider={provider}
+                                />
+                              ))}
+                            </ModelSelectorLogoGroup>
+                            {selectedModel === m.id ? (
+                              <CheckIcon className="ml-auto size-4" />
+                            ) : (
+                              <div className="ml-auto size-4" />
+                            )}
+                          </ModelSelectorItem>
+                        ))}
+                      </ModelSelectorGroup>
+                    </ModelSelectorList>
+                  </ModelSelectorContent>
+                </ModelSelector>
+              )}
+              <PromptInputButton
+                className="rounded-full font-medium text-foreground"
+                disabled={!text.trim() || status === "streaming"}
+                variant="secondary"
+              >
+                <AudioWaveformIcon size={16} />
+                <span>Voice</span>
+              </PromptInputButton>
+            </div>
           </PromptInputFooter>
         </PromptInput>
-        {suggestions.length > 0 && (
-          <Suggestions className="px-4">
-            {suggestions.map(({ icon: Icon, text, color }) => (
-              <Suggestion
-                className="font-normal"
-                key={text}
-                onClick={() => handleSuggestionClick(text)}
-                suggestion={text}
-              >
-                {Icon && <Icon size={16} style={{ color }} />}
-                {text}
-              </Suggestion>
-            ))}
-          </Suggestions>
-        )}
       </div>
     </div>
   );

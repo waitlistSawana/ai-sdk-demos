@@ -1,10 +1,10 @@
+import { deepseek } from "@ai-sdk/deepseek";
 import {
-  streamText,
-  UIMessage,
   convertToModelMessages,
   type LanguageModel,
+  streamText,
+  type UIMessage,
 } from "ai";
-import { deepseek } from "@ai-sdk/deepseek";
 
 // Allow streaming responses up to 30 seconds
 export const maxDuration = 30;
@@ -24,8 +24,8 @@ export async function POST(req: Request) {
     model: model
       ? model
       : isReasoning
-      ? deepseek("deepseek-reasoner")
-      : deepseek("deepseek-chat"),
+        ? deepseek("deepseek-reasoner")
+        : deepseek("deepseek-chat"),
     messages: convertToModelMessages(messages),
     system:
       "You are a helpful assistant that can answer questions and help with tasks",
@@ -37,5 +37,3 @@ export async function POST(req: Request) {
     sendReasoning: true,
   });
 }
-
-

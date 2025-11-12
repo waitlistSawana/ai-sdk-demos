@@ -1,5 +1,5 @@
 export default function DefaultChatbotPageComponent() {
   return (
-    <div className="flex max-w-4xl mx-auto flex-col h-dvh">default chatbot</div>
+    <div className="mx-auto flex h-dvh max-w-4xl flex-col">default chatbot</div>
   );
 }

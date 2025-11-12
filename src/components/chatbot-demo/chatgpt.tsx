@@ -2,7 +2,6 @@
 
 import { useChat } from "@ai-sdk/react";
 import { DefaultChatTransport } from "ai";
-import { ChatUIChatGPT } from "@/components/chatbot/chatui-chatgpt";
 import {
   BarChartIcon,
   BoxIcon,
@@ -10,6 +9,7 @@ import {
   GraduationCapIcon,
   NotepadTextIcon,
 } from "lucide-react";
+import { ChatUIChatGPT } from "@/components/chatbot/chatui-chatgpt";
 
 // Default suggestions for ChatGPT style
 const defaultSuggestions = [

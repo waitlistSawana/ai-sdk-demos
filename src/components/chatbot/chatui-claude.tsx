@@ -2,18 +2,14 @@
 
 import type { ChatRequestOptions, ChatStatus, FileUIPart, UIMessage } from "ai";
 import {
-  AudioWaveformIcon,
-  BarChartIcon,
-  BoxIcon,
+  ArrowUpIcon,
   CameraIcon,
-  CodeSquareIcon,
+  CheckIcon,
   FileIcon,
-  GlobeIcon,
-  GraduationCapIcon,
   ImageIcon,
-  NotepadTextIcon,
-  PaperclipIcon,
+  PlusIcon,
   ScreenShareIcon,
+  Settings2Icon,
 } from "lucide-react";
 import { type ComponentType, useState } from "react";
 import { toast } from "sonner";
@@ -34,10 +30,24 @@ import {
   MessageResponse,
 } from "@/components/ai-elements/message";
 import {
+  ModelSelector,
+  ModelSelectorContent,
+  ModelSelectorEmpty,
+  ModelSelectorGroup,
+  ModelSelectorInput,
+  ModelSelectorItem,
+  ModelSelectorList,
+  ModelSelectorLogo,
+  ModelSelectorLogoGroup,
+  ModelSelectorName,
+  ModelSelectorTrigger,
+} from "@/components/ai-elements/model-selector";
+import {
   PromptInput,
   PromptInputButton,
   PromptInputFooter,
   type PromptInputMessage,
+  PromptInputSubmit,
   PromptInputTextarea,
   PromptInputTools,
 } from "@/components/ai-elements/prompt-input";
@@ -52,7 +62,6 @@ import {
   SourcesContent,
   SourcesTrigger,
 } from "@/components/ai-elements/sources";
-import { Suggestion, Suggestions } from "@/components/ai-elements/suggestion";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -65,7 +74,14 @@ import { cn } from "@/lib/utils";
 // Types & Interfaces
 // ============================================================================
 
-export interface ChatUIChatGPTProps {
+export interface ModelConfig {
+  id: string;
+  name: string;
+  chefSlug: string;
+  providers: string[];
+}
+
+export interface ChatUIClaudeProps {
   /** Messages from useChat */
   messages: UIMessage[];
   /** Chat status from useChat */
@@ -82,12 +98,10 @@ export interface ChatUIChatGPTProps {
   onRegenerate?: (
     options?: { messageId?: string } & ChatRequestOptions,
   ) => void | Promise<void>;
-  /** Optional suggestions for quick actions */
-  suggestions?: Array<{
-    icon?: ComponentType<{ size?: number; style?: React.CSSProperties }>;
-    text: string;
-    color?: string;
-  }>;
+  /** Model selector configuration */
+  models?: ModelConfig[];
+  selectedModel?: string;
+  onModelChange?: (modelId: string) => void;
   /** Input placeholder text */
   placeholder?: string;
   /** Additional className for root container */
@@ -177,19 +191,22 @@ function isTextComplete(message: UIMessage): boolean {
 // Main Component
 // ============================================================================
 
-export function ChatUIChatGPT({
+export function ChatUIClaude({
   messages,
   status,
   onSendMessage,
   onStop,
   onRegenerate,
-  suggestions = [],
-  placeholder = "Ask anything",
+  models = [],
+  selectedModel,
+  onModelChange,
+  placeholder = "Reply to Claude...",
   className,
-}: ChatUIChatGPTProps) {
+}: ChatUIClaudeProps) {
   const [text, setText] = useState<string>("");
-  const [useWebSearch, setUseWebSearch] = useState<boolean>(false);
-  const [useMicrophone, setUseMicrophone] = useState<boolean>(false);
+  const [modelSelectorOpen, setModelSelectorOpen] = useState(false);
+
+  const selectedModelData = models.find((m) => m.id === selectedModel);
 
   const handleSubmit = (message: PromptInputMessage) => {
     const msg = message as { text?: string; files?: any[] };
@@ -215,10 +232,6 @@ export function ChatUIChatGPT({
     });
   };
 
-  const handleSuggestionClick = (suggestion: string) => {
-    onSendMessage({ text: suggestion });
-  };
-
   const handleBranchPrevious = () => {
     console.log("MessageBranch: previous clicked");
   };
@@ -230,7 +243,7 @@ export function ChatUIChatGPT({
   return (
     <div
       className={cn(
-        "relative flex size-full flex-col divide-y overflow-hidden",
+        "relative flex size-full flex-col divide-y overflow-hidden bg-[#faf9f5] dark:bg-background",
         className,
       )}
     >
@@ -273,8 +286,8 @@ export function ChatUIChatGPT({
                         !reasoning) && (
                         <MessageContent
                           className={cn(
-                            "group-[.is-user]:rounded-[24px] group-[.is-user]:bg-secondary group-[.is-user]:text-foreground",
-                            "group-[.is-assistant]:bg-transparent group-[.is-assistant]:p-0 group-[.is-assistant]:text-foreground",
+                            "group-[.is-user]:bg-[#f0eee6] group-[.is-user]:text-foreground dark:group-[.is-user]:bg-muted",
+                            "group-[.is-assistant]:bg-transparent group-[.is-assistant]:p-0 group-[.is-assistant]:font-serif group-[.is-assistant]:text-foreground",
                           )}
                         >
                           <MessageResponse>{textContent}</MessageResponse>
@@ -283,8 +296,7 @@ export function ChatUIChatGPT({
                     </div>
                   </Message>
                 </MessageBranchContent>
-                {/* MessageBranch UI preserved but not functional */}
-                <MessageBranchSelector className="px-0" from={message.role}>
+                <MessageBranchSelector from={message.role}>
                   <MessageBranchPrevious onClick={handleBranchPrevious} />
                   <MessageBranchPage />
                   <MessageBranchNext onClick={handleBranchNext} />
@@ -297,25 +309,21 @@ export function ChatUIChatGPT({
       </Conversation>
       <div className="grid shrink-0 gap-4 p-4">
         <PromptInput
-          className="divide-y-0 rounded-[28px]"
+          className="divide-y-0 overflow-hidden rounded-md bg-card"
           onSubmit={handleSubmit}
         >
           <PromptInputTextarea
-            className="px-5 md:text-base"
+            className="md:text-base"
             onChange={(event) => setText(event.target.value)}
             placeholder={placeholder}
             value={text}
           />
-          <PromptInputFooter className="p-2.5">
+          <PromptInputFooter>
             <PromptInputTools>
               <DropdownMenu>
                 <DropdownMenuTrigger asChild>
-                  <PromptInputButton
-                    className="!rounded-full border font-medium"
-                    variant="outline"
-                  >
-                    <PaperclipIcon size={16} />
-                    <span>Attach</span>
+                  <PromptInputButton className="font-serif" variant="ghost">
+                    <PlusIcon size={16} />
                   </PromptInputButton>
                 </DropdownMenuTrigger>
                 <DropdownMenuContent align="start">
@@ -323,13 +331,13 @@ export function ChatUIChatGPT({
                     onClick={() => handleFileAction("upload-file")}
                   >
                     <FileIcon className="mr-2" size={16} />
-                    Upload file
+                    Upload from computer
                   </DropdownMenuItem>
                   <DropdownMenuItem
                     onClick={() => handleFileAction("upload-photo")}
                   >
                     <ImageIcon className="mr-2" size={16} />
-                    Upload photo
+                    Upload photos
                   </DropdownMenuItem>
                   <DropdownMenuItem
                     onClick={() => handleFileAction("take-screenshot")}
@@ -345,40 +353,83 @@ export function ChatUIChatGPT({
                   </DropdownMenuItem>
                 </DropdownMenuContent>
               </DropdownMenu>
-              <PromptInputButton
-                className="rounded-full border font-medium"
-                onClick={() => setUseWebSearch(!useWebSearch)}
-                variant="outline"
-              >
-                <GlobeIcon size={16} />
-                <span>Search</span>
-              </PromptInputButton>
+              <DropdownMenu>
+                <DropdownMenuTrigger asChild>
+                  <PromptInputButton className="font-serif" variant="ghost">
+                    <Settings2Icon size={16} />
+                  </PromptInputButton>
+                </DropdownMenuTrigger>
+                <DropdownMenuContent align="start">
+                  <DropdownMenuItem>Settings</DropdownMenuItem>
+                </DropdownMenuContent>
+              </DropdownMenu>
             </PromptInputTools>
-            <PromptInputButton
-              className="rounded-full font-medium text-foreground"
-              onClick={() => setUseMicrophone(!useMicrophone)}
-              variant="secondary"
-            >
-              <AudioWaveformIcon size={16} />
-              <span>Voice</span>
-            </PromptInputButton>
+            <div className="flex items-center gap-2">
+              {models.length > 0 && onModelChange && (
+                <ModelSelector
+                  onOpenChange={setModelSelectorOpen}
+                  open={modelSelectorOpen}
+                >
+                  <ModelSelectorTrigger asChild>
+                    <PromptInputButton className="font-serif">
+                      {selectedModelData?.chefSlug && (
+                        <ModelSelectorLogo
+                          provider={selectedModelData.chefSlug}
+                        />
+                      )}
+                      {selectedModelData?.name && (
+                        <ModelSelectorName>
+                          {selectedModelData.name}
+                        </ModelSelectorName>
+                      )}
+                    </PromptInputButton>
+                  </ModelSelectorTrigger>
+                  <ModelSelectorContent className="font-serif">
+                    <ModelSelectorInput placeholder="Search models..." />
+                    <ModelSelectorList>
+                      <ModelSelectorEmpty>No models found.</ModelSelectorEmpty>
+                      <ModelSelectorGroup heading="Anthropic">
+                        {models.map((m) => (
+                          <ModelSelectorItem
+                            key={m.id}
+                            onSelect={() => {
+                              onModelChange(m.id);
+                              setModelSelectorOpen(false);
+                            }}
+                            value={m.id}
+                          >
+                            <ModelSelectorLogo provider={m.chefSlug} />
+                            <ModelSelectorName>{m.name}</ModelSelectorName>
+                            <ModelSelectorLogoGroup>
+                              {m.providers.map((provider) => (
+                                <ModelSelectorLogo
+                                  key={provider}
+                                  provider={provider}
+                                />
+                              ))}
+                            </ModelSelectorLogoGroup>
+                            {selectedModel === m.id ? (
+                              <CheckIcon className="ml-auto size-4" />
+                            ) : (
+                              <div className="ml-auto size-4" />
+                            )}
+                          </ModelSelectorItem>
+                        ))}
+                      </ModelSelectorGroup>
+                    </ModelSelectorList>
+                  </ModelSelectorContent>
+                </ModelSelector>
+              )}
+              <PromptInputSubmit
+                className="bg-[#c96442]"
+                disabled={!text.trim() || status === "streaming"}
+                status={status}
+              >
+                <ArrowUpIcon size={16} />
+              </PromptInputSubmit>
+            </div>
           </PromptInputFooter>
         </PromptInput>
-        {suggestions.length > 0 && (
-          <Suggestions className="px-4">
-            {suggestions.map(({ icon: Icon, text, color }) => (
-              <Suggestion
-                className="font-normal"
-                key={text}
-                onClick={() => handleSuggestionClick(text)}
-                suggestion={text}
-              >
-                {Icon && <Icon size={16} style={{ color }} />}
-                {text}
-              </Suggestion>
-            ))}
-          </Suggestions>
-        )}
       </div>
     </div>
   );

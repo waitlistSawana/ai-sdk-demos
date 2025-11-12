@@ -13,8 +13,8 @@
       "!.next",
       "!dist",
       "!build",
-      "!src/components/ui/**",
-      "!src/components/ai-elements/**",
+      "!src/components/ui",
+      "!src/components/ai-elements",
       "!src/components/chatbot-demo/demo-chatgpt.tsx",
       "!src/components/chatbot-demo/demo-claude.tsx",
       "!src/components/chatbot-demo/demo-grok.tsx"

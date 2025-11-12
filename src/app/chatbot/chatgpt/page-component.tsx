@@ -4,7 +4,7 @@ import ChatGPTPageComponent from "@/components/chatbot-demo/chatgpt";
 
 export default function ChatgptChatbotPageComponent() {
   return (
-    <div className="flex max-w-4xl mx-auto w-full h-dvh">
+    <div className="mx-auto flex h-dvh w-full max-w-4xl">
       <ChatGPTPageComponent />
     </div>
   );
