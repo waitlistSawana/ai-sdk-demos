@@ -25,11 +25,19 @@ This project uses [`next/font`](https://nextjs.org/docs/app/building-your-applic
 Don't update pre-install component librarys. We will update them sometime
 
 - shadcn/ui: src\components\ui
-- ai-elements:
+- ai-elements: src\components\ai-elements
+
+## Highlight
+
+ChatUI that work well with useChat from ai-sdk
+
+base on quick start from ai-element docs
+
+- Chatgpt Clone
+- Claude Clone
+- Grok Clone
 
 ## Section
-
-### Demos
 
 ### Clone Chatbot
 
@@ -43,6 +51,8 @@ Don't update pre-install component librarys. We will update them sometime
 - grok
 
 ### Agents
+
+### Chat UI Components
 
 ## Learn More
 
