@@ -25,18 +25,22 @@ This project uses [`next/font`](https://nextjs.org/docs/app/building-your-applic
 Don't update pre-install component librarys. We will update them sometime
 
 - shadcn/ui: src\components\ui
-- ai-elements: 
+- ai-elements:
 
 ## Section
 
 ### Demos
 
-
 ### Clone Chatbot
 
 - T3 Chat
 - 豆包
-- Claude
+
+[ai-element demos from their github](https://github.com/vercel/ai-elements/blob/main/apps/docs/components/elements-demo.tsx)
+
+- openai
+- claude
+- grok
 
 ### Agents
 
