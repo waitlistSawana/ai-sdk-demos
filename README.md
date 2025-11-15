@@ -49,8 +49,15 @@ base on quick start from ai-element docs
 - openai
 - claude
 - grok
+- default (功能最完备)
 
 ### Agents
+
+#### 1. reddit search agent
+
+功能描述，根据用户提问检索 reddit 讨论，分析用户评论，得到关键见解
+
+和使用了 praw 的 cloudflare python fastapi worker 配合
 
 ### Chat UI Components
 

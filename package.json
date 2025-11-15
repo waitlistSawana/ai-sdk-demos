@@ -10,7 +10,8 @@
     "lint:write": "biome check --write",
     "format": "biome format --write",
     "format:tailwindcss": "biome lint --write --unsafe --only=useSortedClasses",
-    "typecheck": "tsc --noEmit"
+    "typecheck": "tsc --noEmit",
+    "precommit": "pnpm format && pnpm format:tailwindcss"
   },
   "dependencies": {
     "@ai-sdk/deepseek": "^1.0.28",
@@ -81,5 +82,6 @@
     "tailwindcss": "^4",
     "tw-animate-css": "^1.4.0",
     "typescript": "^5"
-  }
+  },
+  "packageManager": "pnpm@10.6.4+sha512.da3d715bfd22a9a105e6e8088cfc7826699332ded60c423b14ec613a185f1602206702ff0fe4c438cb15c979081ce4cb02568e364b15174503a63c7a8e2a5f6c"
 }
