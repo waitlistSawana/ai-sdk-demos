@@ -41,6 +41,12 @@ export default function Home() {
           >
             Chatbots
           </a>
+          <a
+            href="/chatbot-with-tools"
+            className="font-medium text-zinc-950 dark:text-zinc-50"
+          >
+            Chatbot with tools
+          </a>
         </div>
         <div className="flex flex-col gap-4 font-medium text-base sm:flex-row">
           <a

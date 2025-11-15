@@ -9,6 +9,6 @@ export const weatherTool = tool({
   // location below is inferred to be a string:
   execute: async ({ location }) => ({
     location,
-    temperature: 72 + Math.floor(Math.random() * 21) - 10,
+    temperature: 42, // 72 + Math.floor(Math.random() * 21) - 10,
   }),
 });

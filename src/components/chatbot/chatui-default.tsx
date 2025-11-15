@@ -1,6 +1,12 @@
 "use client";
 
-import type { ChatRequestOptions, ChatStatus, FileUIPart, UIMessage } from "ai";
+import type {
+  ChatRequestOptions,
+  ChatStatus,
+  FileUIPart,
+  ToolUIPart,
+  UIMessage,
+} from "ai";
 import {
   CameraIcon,
   CheckIcon,
@@ -64,6 +70,13 @@ import {
   SourcesTrigger,
 } from "@/components/ai-elements/sources";
 import {
+  Tool,
+  ToolContent,
+  ToolHeader,
+  ToolInput,
+  ToolOutput,
+} from "@/components/ai-elements/tool";
+import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
@@ -91,13 +104,13 @@ export interface ChatUIDefaultProps {
   onSendMessage: (
     message?:
       | { text: string; files?: FileList | FileUIPart[] }
-      | { files: FileList | FileUIPart[] },
+      | { files: FileList | FileUIPart[] }
   ) => void | Promise<void>;
   /** Stop generation callback */
   onStop?: () => void;
   /** Regenerate last message callback */
   onRegenerate?: (
-    options?: { messageId?: string } & ChatRequestOptions,
+    options?: { messageId?: string } & ChatRequestOptions
   ) => void | Promise<void>;
   /** Model selector configuration */
   models?: ModelConfig[];
@@ -112,18 +125,6 @@ export interface ChatUIDefaultProps {
 interface SourceInfo {
   url: string;
   title?: string;
-}
-
-interface ToolInfo {
-  name: string;
-  state:
-    | "input-streaming"
-    | "input-available"
-    | "output-available"
-    | "output-error";
-  input?: unknown;
-  output?: unknown;
-  errorText?: string;
 }
 
 // ============================================================================
@@ -150,30 +151,19 @@ function extractSources(message: UIMessage): SourceInfo[] {
     .map((p) =>
       p.type === "source-url"
         ? { url: p.url, title: p.title }
-        : { url: "", title: "" },
+        : { url: "", title: "" }
     )
     .filter((s) => s.url);
 }
 
-function extractTools(message: UIMessage): ToolInfo[] {
+function extractTools(message: UIMessage): ToolUIPart[] {
   return message.parts
-    .filter((p) => p.type === "dynamic-tool")
-    .map((p) => {
-      if (p.type === "dynamic-tool") {
-        return {
-          name: p.toolName,
-          state: p.state,
-          input: p.input,
-          output: p.output,
-          errorText: p.errorText,
-        };
-      }
-      return {
-        name: "",
-        state: "input-available" as const,
-        input: undefined,
-      };
-    });
+    .filter(
+      (p) =>
+        typeof p.type === "string" &&
+        (p.type.startsWith("tool-") || p.type === "dynamic-tool")
+    )
+    .map((p) => p as ToolUIPart);
 }
 
 function isReasoningStreaming(message: UIMessage): boolean {
@@ -247,7 +237,7 @@ export function ChatUIDefault({
     <div
       className={cn(
         "relative flex size-full flex-col divide-y overflow-hidden",
-        className,
+        className
       )}
     >
       <Conversation>
@@ -283,6 +273,30 @@ export function ChatUIDefault({
                           <ReasoningTrigger />
                           <ReasoningContent>{reasoning}</ReasoningContent>
                         </Reasoning>
+                      )}
+                      {tools.length > 0 && (
+                        <div className="my-4 space-y-2">
+                          {tools.map((tool, index) => (
+                            <Tool key={`${message.id}-tool-${index}`}>
+                              <ToolHeader
+                                title={
+                                  tool.type.startsWith("tool-")
+                                    ? tool.type.replace("tool-", "")
+                                    : tool.type
+                                }
+                                type={tool.type}
+                                state={tool.state}
+                              />
+                              <ToolContent>
+                                <ToolInput input={tool.input} />
+                                <ToolOutput
+                                  output={tool.output}
+                                  errorText={tool.errorText}
+                                />
+                              </ToolContent>
+                            </Tool>
+                          ))}
+                        </div>
                       )}
                       {(message.role === "user" ||
                         isReasoningComplete ||
