@@ -3,7 +3,7 @@
 import { cn } from "@/lib/utils";
 import { useChat } from "@ai-sdk/react";
 import { DefaultChatTransport } from "ai";
-import { useState } from "react";
+import { useState, useMemo } from "react";
 import {
   ChatUIDefault,
   type ModelConfig,
@@ -41,6 +41,11 @@ export default function ChatbotWithToolsPageComponent({
     },
   });
 
+  const sendMessageOptions = useMemo(
+    () => ({ body: { modelId: selectedModel } }),
+    [selectedModel],
+  );
+
   return (
     <div className="mx-auto flex h-dvh w-full max-w-4xl">
       <ChatUIDefault
@@ -52,6 +57,7 @@ export default function ChatbotWithToolsPageComponent({
         models={models}
         selectedModel={selectedModel}
         onModelChange={setSelectedModel}
+        sendMessageOptions={sendMessageOptions}
         placeholder="Ask about the weather..."
       />
     </div>

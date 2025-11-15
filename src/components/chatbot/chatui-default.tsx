@@ -104,13 +104,14 @@ export interface ChatUIDefaultProps {
   onSendMessage: (
     message?:
       | { text: string; files?: FileList | FileUIPart[] }
-      | { files: FileList | FileUIPart[] }
+      | { files: FileList | FileUIPart[] },
+    options?: ChatRequestOptions,
   ) => void | Promise<void>;
   /** Stop generation callback */
   onStop?: () => void;
   /** Regenerate last message callback */
   onRegenerate?: (
-    options?: { messageId?: string } & ChatRequestOptions
+    options?: { messageId?: string } & ChatRequestOptions,
   ) => void | Promise<void>;
   /** Model selector configuration */
   models?: ModelConfig[];
@@ -120,6 +121,8 @@ export interface ChatUIDefaultProps {
   placeholder?: string;
   /** Additional className for root container */
   className?: string;
+  /** Additional options to pass to sendMessage */
+  sendMessageOptions?: ChatRequestOptions;
 }
 
 interface SourceInfo {
@@ -151,7 +154,7 @@ function extractSources(message: UIMessage): SourceInfo[] {
     .map((p) =>
       p.type === "source-url"
         ? { url: p.url, title: p.title }
-        : { url: "", title: "" }
+        : { url: "", title: "" },
     )
     .filter((s) => s.url);
 }
@@ -161,7 +164,7 @@ function extractTools(message: UIMessage): ToolUIPart[] {
     .filter(
       (p) =>
         typeof p.type === "string" &&
-        (p.type.startsWith("tool-") || p.type === "dynamic-tool")
+        (p.type.startsWith("tool-") || p.type === "dynamic-tool"),
     )
     .map((p) => p as ToolUIPart);
 }
@@ -193,6 +196,7 @@ export function ChatUIDefault({
   onModelChange,
   placeholder = "Message...",
   className,
+  sendMessageOptions,
 }: ChatUIDefaultProps) {
   const [text, setText] = useState<string>("");
   const [modelSelectorOpen, setModelSelectorOpen] = useState(false);
@@ -212,9 +216,9 @@ export function ChatUIDefault({
     }
 
     if (msg.text) {
-      onSendMessage({ text: msg.text, files: msg.files });
+      onSendMessage({ text: msg.text, files: msg.files }, sendMessageOptions);
     } else if (msg.files) {
-      onSendMessage({ files: msg.files });
+      onSendMessage({ files: msg.files }, sendMessageOptions);
     }
     setText("");
   };
@@ -237,7 +241,7 @@ export function ChatUIDefault({
     <div
       className={cn(
         "relative flex size-full flex-col divide-y overflow-hidden",
-        className
+        className,
       )}
     >
       <Conversation>

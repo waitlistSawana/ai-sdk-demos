@@ -27,6 +27,14 @@ Don't update pre-install component librarys. We will update them sometime
 - shadcn/ui: src\components\ui
 - ai-elements: src\components\ai-elements
 
+## Architecture
+
+### Model Management
+
+- `src/ai/models.ts`: 集中管理 AI 模型实例
+- 前端通过 modelId 选择模型
+- 后端根据 modelId 动态获取模型实例
+
 ## Highlight
 
 ChatUI that work well with useChat from ai-sdk
@@ -50,6 +58,23 @@ base on quick start from ai-element docs
 - claude
 - grok
 - default (功能最完备)
+
+### Chat with Tools
+
+演示 AI 工具调用功能的聊天页面
+
+- **路径**: `/chatbot-with-tools`
+- **功能**:
+
+  - 支持 weatherTool 工具调用
+  - 显示工具调用参数和结果
+  - 前端模型选择器（DeepSeek Chat / Reasoner）
+  - 模型动态切换
+
+- **技术实现**:
+  - 使用 AI SDK 的 tools 功能
+  - 集成 ai-elements/tool 组件
+  - 前后端模型联动（modelId 传递）
 
 ### Agents
 

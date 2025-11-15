@@ -1,8 +1,7 @@
 import { weatherTool } from "@/ai/tools/weather-tools";
-import { deepseek } from "@ai-sdk/deepseek";
+import { getModelById } from "@/ai/models";
 import {
   convertToModelMessages,
-  type LanguageModel,
   stepCountIs,
   streamText,
   type UIMessage,
@@ -12,16 +11,12 @@ import {
 export const maxDuration = 30;
 
 export async function POST(req: Request) {
-  const {
-    messages,
-    model,
-  }: {
-    messages: UIMessage[];
-    model: LanguageModel | undefined;
-  } = await req.json();
+  const { messages, modelId } = await req.json();
+
+  const model = getModelById(modelId || "deepseek-chat");
 
   const result = streamText({
-    model: model ? model : deepseek("deepseek-chat"),
+    model,
     messages: convertToModelMessages(messages),
     tools: { weatherTool },
     stopWhen: stepCountIs(10),
