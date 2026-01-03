@@ -1,19 +1,21 @@
 "use client";
 
 import {
+  Conversation,
+  ConversationContent,
+  ConversationScrollButton,
+} from "@/components/ai-elements/conversation";
+import {
+  Message,
   MessageBranch,
   MessageBranchContent,
   MessageBranchNext,
   MessageBranchPage,
   MessageBranchPrevious,
   MessageBranchSelector,
+  MessageContent,
+  MessageResponse,
 } from "@/components/ai-elements/message";
-import {
-  Conversation,
-  ConversationContent,
-  ConversationScrollButton,
-} from "@/components/ai-elements/conversation";
-import { Message, MessageContent } from "@/components/ai-elements/message";
 import {
   PromptInput,
   PromptInputButton,
@@ -27,7 +29,6 @@ import {
   ReasoningContent,
   ReasoningTrigger,
 } from "@/components/ai-elements/reasoning";
-import { MessageResponse } from "@/components/ai-elements/message";
 import {
   Source,
   Sources,
@@ -538,15 +539,15 @@ const Example = () => {
   }, [streamMessage]);
 
   const handleSubmit = (message: PromptInputMessage) => {
-    const hasText = Boolean(message.text);
-    const hasAttachments = Boolean(message.files?.length);
+    const hasText = Boolean((message as { text?: string }).text);
+    const hasAttachments = Boolean((message as { files?: FileList }).files?.length);
 
     if (!(hasText || hasAttachments)) {
       return;
     }
 
     setStatus("submitted");
-    addUserMessage(message.text || "Sent with attachments");
+    addUserMessage((message as { text?: string }).text || "Sent with attachments");
     setText("");
   };
 

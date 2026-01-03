@@ -1,13 +1,13 @@
 "use client";
 
-import { cn } from "@/lib/utils";
 import { useChat } from "@ai-sdk/react";
 import { DefaultChatTransport } from "ai";
-import { useState, useMemo } from "react";
+import { useMemo, useState } from "react";
 import {
   ChatUIDefault,
   type ModelConfig,
 } from "@/components/chatbot/chatui-default";
+import { cn } from "@/lib/utils";
 
 const models: ModelConfig[] = [
   {

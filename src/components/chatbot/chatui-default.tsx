@@ -19,7 +19,7 @@ import {
   SearchIcon,
   SendIcon,
 } from "lucide-react";
-import { type ComponentType, useState } from "react";
+import { useState } from "react";
 import { toast } from "sonner";
 import {
   Conversation,

@@ -1,4 +1,12 @@
+import type { Metadata } from "next";
 import Image from "next/image";
+import { Button } from "@/components/ui/button";
+
+export const metadata: Metadata = {
+  title: "AI SDK Demos - Vercel AI SDK Examples",
+  description:
+    "探索基于 Vercel AI SDK 和 AI Elements 的各种 AI 聊天机器人界面和工作流演示项目",
+};
 
 export default function Home() {
   return (
@@ -26,7 +34,7 @@ export default function Home() {
             </a>{" "}
             or the{" "}
             <a
-              href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
+              href="https://ai-sdk.dev/elements"
               className="font-medium text-zinc-950 dark:text-zinc-50"
             >
               Learning
@@ -35,18 +43,21 @@ export default function Home() {
           </p>
         </div>
         <div className="flex gap-3">
-          <a
-            href="/chatbot"
-            className="font-medium text-zinc-950 dark:text-zinc-50"
-          >
-            Chatbots
-          </a>
-          <a
-            href="/chatbot-with-tools"
-            className="font-medium text-zinc-950 dark:text-zinc-50"
-          >
-            Chatbot with tools
-          </a>
+          <Button asChild>
+            <a href="/chatbot" className="font-medium">
+              Chatbots
+            </a>
+          </Button>
+          <Button asChild>
+            <a href="/chatbot-with-tools" className="font-medium">
+              Chatbot with tools
+            </a>
+          </Button>
+          <Button asChild>
+            <a href="/workflow-demo" className="font-medium">
+              Workflow Demo
+            </a>
+          </Button>
         </div>
         <div className="flex flex-col gap-4 font-medium text-base sm:flex-row">
           <a

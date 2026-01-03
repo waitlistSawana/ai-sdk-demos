@@ -3,15 +3,10 @@
 import type { ChatRequestOptions, ChatStatus, FileUIPart, UIMessage } from "ai";
 import {
   AudioWaveformIcon,
-  BarChartIcon,
-  BoxIcon,
   CameraIcon,
-  CodeSquareIcon,
   FileIcon,
   GlobeIcon,
-  GraduationCapIcon,
   ImageIcon,
-  NotepadTextIcon,
   PaperclipIcon,
   ScreenShareIcon,
 } from "lucide-react";

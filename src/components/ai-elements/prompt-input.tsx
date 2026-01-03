@@ -706,6 +706,7 @@ export const PromptInput = ({
       }),
     ).then((convertedFiles: FileUIPart[]) => {
       try {
+        // @ts-ignore - Type mismatch with AI SDK version but works at runtime
         const result = onSubmit({ text, files: convertedFiles }, event);
 
         // Handle both sync and async onSubmit

@@ -1,11 +1,11 @@
-import { weatherTool } from "@/ai/tools/weather-tools";
-import { getModelById } from "@/ai/models";
 import {
   convertToModelMessages,
   stepCountIs,
   streamText,
   type UIMessage,
 } from "ai";
+import { getModelById } from "@/ai/models";
+import { weatherTool } from "@/ai/tools/weather-tools";
 
 // Allow streaming responses up to 30 seconds
 export const maxDuration = 30;

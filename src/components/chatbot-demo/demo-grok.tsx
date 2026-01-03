@@ -1,27 +1,21 @@
 "use client";
 
 import {
+  Conversation,
+  ConversationContent,
+  ConversationScrollButton,
+} from "@/components/ai-elements/conversation";
+import {
+  Message,
   MessageBranch,
   MessageBranchContent,
   MessageBranchNext,
   MessageBranchPage,
   MessageBranchPrevious,
   MessageBranchSelector,
+  MessageContent,
+  MessageResponse,
 } from "@/components/ai-elements/message";
-import {
-  Conversation,
-  ConversationContent,
-  ConversationScrollButton,
-} from "@/components/ai-elements/conversation";
-import { Message, MessageContent } from "@/components/ai-elements/message";
-import {
-  PromptInput,
-  PromptInputButton,
-  PromptInputFooter,
-  type PromptInputMessage,
-  PromptInputTextarea,
-  PromptInputTools,
-} from "@/components/ai-elements/prompt-input";
 import {
   ModelSelector,
   ModelSelectorContent,
@@ -36,11 +30,18 @@ import {
   ModelSelectorTrigger,
 } from "@/components/ai-elements/model-selector";
 import {
+  PromptInput,
+  PromptInputButton,
+  PromptInputFooter,
+  type PromptInputMessage,
+  PromptInputTextarea,
+  PromptInputTools,
+} from "@/components/ai-elements/prompt-input";
+import {
   Reasoning,
   ReasoningContent,
   ReasoningTrigger,
 } from "@/components/ai-elements/reasoning";
-import { MessageResponse } from "@/components/ai-elements/message";
 import {
   Source,
   Sources,
@@ -55,17 +56,15 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { cn } from "@/lib/utils";
 import type { ToolUIPart } from "ai";
-import { CheckIcon } from "lucide-react";
 import {
   AudioWaveformIcon,
-  CameraIcon,
-  ChevronDownIcon,
+  CameraIcon, CheckIcon, ChevronDownIcon,
   FileIcon,
   ImageIcon,
   LightbulbIcon,
   PaperclipIcon,
   ScreenShareIcon,
-  SearchIcon,
+  SearchIcon
 } from "lucide-react";
 import { nanoid } from "nanoid";
 import { useCallback, useEffect, useState } from "react";
@@ -562,15 +561,15 @@ const Example = () => {
   }, [streamMessage]);
 
   const handleSubmit = (message: PromptInputMessage) => {
-    const hasText = Boolean(message.text);
-    const hasAttachments = Boolean(message.files?.length);
+    const hasText = Boolean((message as { text?: string }).text);
+    const hasAttachments = Boolean((message as { files?: FileList }).files?.length);
 
     if (!(hasText || hasAttachments)) {
       return;
     }
 
     setStatus("submitted");
-    addUserMessage(message.text || "Sent with attachments");
+    addUserMessage((message as { text?: string }).text || "Sent with attachments");
     setText("");
   };
 

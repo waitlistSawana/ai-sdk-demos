@@ -11,7 +11,7 @@
     "format": "biome format --write",
     "format:tailwindcss": "biome lint --write --unsafe --only=useSortedClasses",
     "typecheck": "tsc --noEmit",
-    "precommit": "pnpm format && pnpm format:tailwindcss"
+    "precommit": "pnpm format && pnpm format:tailwindcss && pnpm typecheck && pnpm lint:write"
   },
   "dependencies": {
     "@ai-sdk/deepseek": "^1.0.28",
