@@ -58,6 +58,11 @@ export default function Home() {
               Workflow Demo
             </a>
           </Button>
+          {/* <Button asChild>
+            <a href="/cloudflare/stream" className="font-medium">
+              Stream Demo
+            </a>
+          </Button> */}
         </div>
         <div className="flex flex-col gap-4 font-medium text-base sm:flex-row">
           <a
