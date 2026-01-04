@@ -58,6 +58,11 @@ export default function Home() {
               Workflow Demo
             </a>
           </Button>
+          <Button asChild>
+            <a href="/workflow/konva" className="font-medium">
+              Konva Demo
+            </a>
+          </Button>
           {/* <Button asChild>
             <a href="/cloudflare/stream" className="font-medium">
               Stream Demo
